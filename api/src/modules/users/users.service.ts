@@ -3,8 +3,16 @@ import { UserRepository } from 'src/shared/database/repositories/users.repositor
 
 @Injectable()
 export class UsersService {
-  getUserById(userId: string) {
-    return { userId };
-  }
   constructor(private readonly userRepo: UserRepository) {}
+
+  async getUserById(userId: string) {
+    const user = await this.userRepo.findUnique({
+      where: { id: userId },
+    });
+
+    return {
+      name: user.name,
+      email: user.email,
+    };
+  }
 }
