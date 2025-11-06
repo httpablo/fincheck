@@ -11,7 +11,7 @@ export class ValidateCategoryOwnershipService {
     });
 
     if (!isOwner) {
-      throw new NotFoundException('Bank account not found');
+      throw new NotFoundException('Category not found');
     }
   }
 }
