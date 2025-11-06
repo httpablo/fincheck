@@ -2,7 +2,8 @@ import { Global, Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { UserRepository } from './repositories/users.repositories';
 import { CategoriesRepository } from './repositories/categories.repositories';
-import { BankAccountRepository } from './repositories/bank-account.repositories';
+import { BankAccountRepository } from './repositories/bank-accounts.repositories';
+import { TransactionRepository } from './repositories/transations.repositories';
 
 @Global()
 @Module({
@@ -11,7 +12,13 @@ import { BankAccountRepository } from './repositories/bank-account.repositories'
     UserRepository,
     CategoriesRepository,
     BankAccountRepository,
+    TransactionRepository,
   ],
-  exports: [UserRepository, CategoriesRepository, BankAccountRepository],
+  exports: [
+    UserRepository,
+    CategoriesRepository,
+    BankAccountRepository,
+    TransactionRepository,
+  ],
 })
 export class DatabaseModule {}
