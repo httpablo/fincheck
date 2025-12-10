@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { httpClient } from "../../../app/services/HttpCliente";
 
 const schema = z.object({
   email: z.email({ message: "Informe um e-mail válido" }),
@@ -16,7 +17,6 @@ export function useLoginController() {
     register,
     handleSubmit: hookFormHandleSubmit,
     formState: { errors, isSubmitting },
-    setError,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onSubmit",
@@ -24,15 +24,7 @@ export function useLoginController() {
   });
 
   const handleSubmit = hookFormHandleSubmit(async (data) => {
-    try {
-      return console.log("Login successful", data);
-    } catch (e) {
-      setError("email", {
-        type: "server",
-        message: "Erro ao tentar entrar. Verifique suas credenciais.",
-      });
-      return console.error("Login failed", e);
-    }
+    await httpClient.post("/auth/signin", data);
   });
 
   return { handleSubmit, register, errors, isSubmitting };

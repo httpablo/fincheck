@@ -18,7 +18,7 @@ export function Register() {
             Já possui uma conta?
           </span>
           <Link
-            to="/register"
+            to="/login"
             className="tracking-[-0.5px] font-medium text-teal-700"
           >
             Fazer login
