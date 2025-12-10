@@ -3,10 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 
 const schema = z.object({
-  email: z.email("Informe um e-mail válido"),
+  email: z.email({ message: "Informe um e-mail válido" }),
   password: z
     .string()
-    .nonempty("A senha é obrigatória")
     .min(8, { message: "A senha deve ter ao menos 8 caracteres" }),
 });
 
@@ -16,15 +15,25 @@ export function useLoginController() {
   const {
     register,
     handleSubmit: hookFormHandleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    setError,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
-  const handleSubmit = hookFormHandleSubmit((data) => {
-    const result = schema.safeParse(data);
-    console.log(result);
+  const handleSubmit = hookFormHandleSubmit(async (data) => {
+    try {
+      return console.log("Login successful", data);
+    } catch (e) {
+      setError("email", {
+        type: "server",
+        message: "Erro ao tentar entrar. Verifique suas credenciais.",
+      });
+      return console.error("Login failed", e);
+    }
   });
 
-  return { handleSubmit, register, errors };
+  return { handleSubmit, register, errors, isSubmitting };
 }
