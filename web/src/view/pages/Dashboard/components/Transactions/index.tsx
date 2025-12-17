@@ -5,11 +5,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { MONTHS } from "../../../../../app/config/constants";
 import { SliderOption } from "./SliderOption";
 import { SliderNavigation } from "./SliderNavigation";
+import { formatCurrency } from "../../../../../app/utils/formatCurrency";
+import { CategoryIcon } from "../../../../components/icons/categories/CategoryIcon";
 
 export function Transactions() {
   return (
     <div className="gray-teal-100 rounded-2xl w-full h-full p-10">
-      <header className="">
+      <header>
         <div className="flex items-center justify-between">
           <button className="flex items-center gap-2">
             <TransactionsIcon />
@@ -43,7 +45,20 @@ export function Transactions() {
         </div>
       </header>
 
-      <div className="mt-4">Conteudo</div>
+      <div className="mt-4">
+        <div className="bg-white p-4 rounded-2xl flex items-center justify-between gap-4">
+          <div className="flex-1">
+            <CategoryIcon type="income" />
+
+            <div>
+              <strong>Almoço</strong>
+              <span>04/06/2023</span>
+            </div>
+          </div>
+
+          <span>{formatCurrency(123)}</span>
+        </div>
+      </div>
     </div>
   );
 }
