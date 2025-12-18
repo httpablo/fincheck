@@ -7,7 +7,7 @@ interface SliderOptionProps {
   index: number;
 }
 
-export function SliderOption({ isActive, month, index }: SliderOptionProps) {
+export function SliderOptions({ isActive, month, index }: SliderOptionProps) {
   const swiper = useSwiper();
 
   return (
