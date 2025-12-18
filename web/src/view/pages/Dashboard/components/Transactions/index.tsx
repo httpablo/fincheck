@@ -29,7 +29,7 @@ export function Transactions() {
       {!isInitialLoading && (
         <>
           <header>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between max-[750px]:mx-4">
               <button className="flex items-center gap-2">
                 <TransactionsIcon />
                 <span className="text-gray-800 tracking-[-0.5px] font-medium">
