@@ -10,10 +10,18 @@ import { SliderNavigation } from "./SliderNavigation";
 import { SliderOptions } from "./SliderOptions";
 import { useTransactionsController } from "./useTransactionsController";
 import { TransactionTypeDropdown } from "./TransactionTypeDropdown";
+import { FiltersModal } from "./FiltersModal";
 
 export function Transactions() {
-  const { areValuesVisible, isInitialLoading, isLoading, transactions } =
-    useTransactionsController();
+  const {
+    areValuesVisible,
+    isInitialLoading,
+    isLoading,
+    transactions,
+    handleOpenFilterModal,
+    handleCloseFilterModal,
+    isFilterModalOpen,
+  } = useTransactionsController();
 
   const hasTransactions = transactions.length > 0;
 
@@ -27,11 +35,19 @@ export function Transactions() {
 
       {!isInitialLoading && (
         <>
+          <FiltersModal
+            open={isFilterModalOpen}
+            onClose={handleCloseFilterModal}
+          />
+
           <header>
             <div className="flex items-center justify-between max-[750px]:mx-4">
               <TransactionTypeDropdown />
 
-              <button>
+              <button
+                onClick={handleOpenFilterModal}
+                className="cursor-pointer"
+              >
                 <FilterIcon />
               </button>
             </div>
