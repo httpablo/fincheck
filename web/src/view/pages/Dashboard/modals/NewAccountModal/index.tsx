@@ -1,3 +1,5 @@
+import { Button } from "../../../../components/Button";
+import { ColorsDropdownInput } from "../../../../components/ColorsDropdown";
 import { Input } from "../../../../components/Input";
 import { InputCurrency } from "../../../../components/InputCurrency";
 import { Modal } from "../../../../components/Modal";
@@ -18,7 +20,7 @@ export function NewAccountModal() {
         <div>
           <span className="text-gray-600 tracking-[-0.5px] text-xs">Saldo</span>
           <div className="flex items-center gap-2">
-            <span className="text-gray-600 tracking-[-0.5px] text-lg"></span>
+            <span className="text-gray-600 tracking-[-0.5px] text-lg">R$ </span>
             <InputCurrency />
           </div>
         </div>
@@ -34,7 +36,13 @@ export function NewAccountModal() {
               { value: "INVESTIMENT", label: "Ivestimento" },
             ]}
           />
+
+          <ColorsDropdownInput />
         </div>
+
+        <Button type="submit" className="mt-6 w-full">
+          Criar Conta
+        </Button>
       </form>
     </Modal>
   );
