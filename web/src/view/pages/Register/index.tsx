@@ -46,7 +46,11 @@ export function Register() {
           {...register("password")}
         />
 
-        <Button type="submit" className="mt-2" isLoading={isLoading}>
+        <Button
+          type="submit"
+          className="mt-2 cursor-pointer"
+          isLoading={isLoading}
+        >
           Criar conta
         </Button>
       </form>

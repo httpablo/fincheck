@@ -40,7 +40,7 @@ export function NewAccountModal() {
           <ColorsDropdownInput />
         </div>
 
-        <Button type="submit" className="mt-6 w-full">
+        <Button type="submit" className="mt-6 w-full cursor-pointer">
           Criar Conta
         </Button>
       </form>
