@@ -1,4 +1,4 @@
-import { httpClient } from "../httpCliente";
+import { httpClient } from "../httpClient";
 
 export interface CreateBankAccountParams {
   name: string;

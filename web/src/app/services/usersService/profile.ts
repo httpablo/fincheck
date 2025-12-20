@@ -1,4 +1,4 @@
-import { httpClient } from "../httpCliente";
+import { httpClient } from "../httpClient";
 
 interface ProfileResponse {
   name: string;
