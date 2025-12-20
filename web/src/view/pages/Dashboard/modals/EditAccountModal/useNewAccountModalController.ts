@@ -1,4 +1,4 @@
-import { bankAccountsService } from "./../../../../../app/services/bankAccountsService/index";
+import { bankAccountsService } from "../../../../../app/services/bankAccountsService/index";
 import z from "zod";
 import { useDashboard } from "../../components/DashboardContext/useDashboard";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
@@ -18,8 +18,8 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export function useNewAccountModalController() {
-  const { isNewAccountModalOpen, closeNewAccountModal } = useDashboard();
+export function useEditAccountModalController() {
+  const { isEditAccountModalOpen, closeEditAccountModal } = useDashboard();
 
   const {
     register,
@@ -49,7 +49,7 @@ export function useNewAccountModalController() {
 
       await queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
       toast.success("Conta criada com sucesso!");
-      closeNewAccountModal();
+      closeEditAccountModal();
       reset();
     } catch {
       toast.error("Erro ao criar conta!");
@@ -57,8 +57,8 @@ export function useNewAccountModalController() {
   });
 
   return {
-    isNewAccountModalOpen,
-    closeNewAccountModal,
+    isEditAccountModalOpen,
+    closeEditAccountModal,
     register,
     handleSubmit,
     errors,

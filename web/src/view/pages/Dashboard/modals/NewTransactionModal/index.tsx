@@ -48,7 +48,7 @@ export function NewTranasctionModal() {
               },
               {
                 value: "INVESTMENT",
-                label: "Investimentos",
+                label: "Investimento",
               },
               {
                 value: "CASH",
@@ -66,7 +66,7 @@ export function NewTranasctionModal() {
               },
               {
                 value: "INVESTMENT",
-                label: "Investimentos",
+                label: "Investimento",
               },
               {
                 value: "CASH",
