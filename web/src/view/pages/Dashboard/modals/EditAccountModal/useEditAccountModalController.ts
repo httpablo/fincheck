@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { currencyStringToNumber } from "../../../../../app/utils/currencyStringToNumber";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const schema = z.object({
   initialBalance: z.union([
@@ -40,18 +41,24 @@ export function useEditAccountModalController() {
     },
   });
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const { mutateAsync: updateAccount, status } = useMutation({
     mutationFn: bankAccountsService.update,
   });
 
-  const { mutateAsync, status } = mutation;
+  const { mutateAsync: removeAccount, status: statusDelete } = useMutation({
+    mutationFn: bankAccountsService.remove,
+  });
+
   const isLoading = status === "pending";
+  const isLoadingDelete = statusDelete === "pending";
 
   const handleSubmit = hookFormSubmit(async (data) => {
     try {
-      await mutateAsync({
+      await updateAccount({
         id: accountToEdit!.id,
         ...data,
         initialBalance: currencyStringToNumber(data.initialBalance),
@@ -65,6 +72,26 @@ export function useEditAccountModalController() {
     }
   });
 
+  function handleOpenDeleteModal() {
+    setIsDeleteModalOpen(true);
+  }
+
+  function handleCloseDeleteModal() {
+    setIsDeleteModalOpen(false);
+  }
+
+  async function handleDeleteAccount() {
+    try {
+      await removeAccount(accountToEdit!.id);
+
+      await queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
+      toast.success("Conta deletada com sucesso!");
+      closeEditAccountModal();
+    } catch {
+      toast.error("Erro ao deletar conta!");
+    }
+  }
+
   return {
     isEditAccountModalOpen,
     closeEditAccountModal,
@@ -74,5 +101,10 @@ export function useEditAccountModalController() {
     control,
     isLoading,
     accountToEdit,
+    isDeleteModalOpen,
+    handleOpenDeleteModal,
+    handleCloseDeleteModal,
+    handleDeleteAccount,
+    isLoadingDelete,
   };
 }
