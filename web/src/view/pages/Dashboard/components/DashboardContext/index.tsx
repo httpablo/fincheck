@@ -3,7 +3,7 @@ import { DashboardContext } from "./dashboardContext";
 import type { BankAccount } from "../../../../../app/entities/BankAccount";
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
-  const [areValuesVisible, setAreaValuesVisible] = useState(false);
+  const [areValuesVisible, setAreaValuesVisible] = useState(true);
   const [isNewAccountModalOpen, setIsNewAccountModalOpen] = useState(false);
   const [isNewTransactionModalOpen, setIsNewTransactionModalOpen] =
     useState(false);

@@ -4,7 +4,7 @@ import { CrossCircledIcon } from "@radix-ui/react-icons";
 
 interface InputCurrencyProps {
   error?: string;
-  value?: string;
+  value?: string | number;
   onChange?(value: string): void;
 }
 

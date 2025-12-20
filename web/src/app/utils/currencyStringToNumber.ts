@@ -1,4 +1,8 @@
-export function currencyStringToNumber(value: string): number {
+export function currencyStringToNumber(value: string | number): number {
+  if (typeof value === "number") {
+    return value;
+  }
+
   const numValue = Number(value);
   if (!isNaN(numValue)) {
     return numValue;

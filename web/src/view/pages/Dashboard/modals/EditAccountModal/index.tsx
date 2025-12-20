@@ -5,7 +5,7 @@ import { Input } from "../../../../components/Input";
 import { InputCurrency } from "../../../../components/InputCurrency";
 import { Modal } from "../../../../components/Modal";
 import { Select } from "../../../../components/Select";
-import { useEditAccountModalController } from "./useNewAccountModalController";
+import { useEditAccountModalController } from "./useEditAccountModalController";
 
 export function EditAccountModal() {
   const {
@@ -93,7 +93,7 @@ export function EditAccountModal() {
           className="mt-6 w-full cursor-pointer"
           isLoading={isLoading}
         >
-          Criar Conta
+          Salvar
         </Button>
       </form>
     </Modal>

@@ -8,7 +8,10 @@ import { currencyStringToNumber } from "../../../../../app/utils/currencyStringT
 import toast from "react-hot-toast";
 
 const schema = z.object({
-  initialBalance: z.string().min(1, "Saldo inicial é obrigatório"),
+  initialBalance: z.union([
+    z.string().nonempty("Saldo inicial é obrigatório"),
+    z.number(),
+  ]),
   name: z.string().min(1, "Nome da conta é obrigatório"),
   type: z.enum(["CHECKING", "INVESTMENT", "CASH"], {
     message: "Tipo de conta é obrigatório",
@@ -19,22 +22,28 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export function useEditAccountModalController() {
-  const { isEditAccountModalOpen, closeEditAccountModal } = useDashboard();
+  const { isEditAccountModalOpen, closeEditAccountModal, accountToEdit } =
+    useDashboard();
 
   const {
     register,
     handleSubmit: hookFormSubmit,
     formState: { errors },
     control,
-    reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      color: accountToEdit?.color,
+      name: accountToEdit?.name,
+      type: accountToEdit?.type,
+      initialBalance: accountToEdit?.initialBalance.toString(),
+    },
   });
 
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: bankAccountsService.create,
+    mutationFn: bankAccountsService.update,
   });
 
   const { mutateAsync, status } = mutation;
@@ -43,16 +52,16 @@ export function useEditAccountModalController() {
   const handleSubmit = hookFormSubmit(async (data) => {
     try {
       await mutateAsync({
+        id: accountToEdit!.id,
         ...data,
         initialBalance: currencyStringToNumber(data.initialBalance),
       });
 
       await queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
-      toast.success("Conta criada com sucesso!");
+      toast.success("Conta atualizada com sucesso!");
       closeEditAccountModal();
-      reset();
     } catch {
-      toast.error("Erro ao criar conta!");
+      toast.error("Erro ao atualizar conta!");
     }
   });
 
@@ -64,5 +73,6 @@ export function useEditAccountModalController() {
     errors,
     control,
     isLoading,
+    accountToEdit,
   };
 }
