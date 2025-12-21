@@ -29,6 +29,18 @@ export function useTransactionsController() {
     };
   }
 
+  function handleApplyFilters({
+    bankAccountId,
+    year,
+  }: {
+    bankAccountId: string | undefined;
+    year: number;
+  }) {
+    handleChangeFilters("bankAccountId")(bankAccountId);
+    handleChangeFilters("year")(year);
+    setIsFilterModalOpen(false);
+  }
+
   function handleOpenFilterModal() {
     setIsFilterModalOpen(true);
   }
@@ -47,5 +59,6 @@ export function useTransactionsController() {
     transactions,
     filters,
     handleChangeFilters,
+    handleApplyFilters,
   };
 }

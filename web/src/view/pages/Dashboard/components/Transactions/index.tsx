@@ -24,6 +24,7 @@ export function Transactions() {
     isFilterModalOpen,
     filters,
     handleChangeFilters,
+    handleApplyFilters,
   } = useTransactionsController();
 
   const hasTransactions = transactions.length > 0;
@@ -41,6 +42,7 @@ export function Transactions() {
           <FiltersModal
             open={isFilterModalOpen}
             onClose={handleCloseFilterModal}
+            onApplyFilters={handleApplyFilters}
           />
 
           <header>
