@@ -7,10 +7,10 @@ interface CategoryIconProps {
 
 export function CategoryIcon({ type, category }: CategoryIconProps) {
   const Icon =
-    iconsMap[type][
+    iconsMap[type]?.[
       (category as keyof (typeof iconsMap.expense | typeof iconsMap.income)) ??
         "default"
-    ] ?? iconsMap[type].default;
+    ] ?? iconsMap[type]?.default;
 
-  return <Icon />;
+  return Icon ? <Icon /> : null;
 }
