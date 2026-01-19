@@ -55,6 +55,7 @@ export function useNewTransactionModalController() {
       });
 
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["banckAccounts"] });
       toast.success(
         newTransactionType === "INCOME"
           ? "Receita criada com sucesso!"

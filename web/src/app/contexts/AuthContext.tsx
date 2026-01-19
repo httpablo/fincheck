@@ -12,13 +12,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [signedIn, setSignedIn] = React.useState<boolean>(() => {
     const storeAccessToken = localStorage.getItem(
-      localStorageKeys.ACCESS_TOKEN
+      localStorageKeys.ACCESS_TOKEN,
     );
 
     return !!storeAccessToken;
   });
 
-  const { isFetching, isSuccess } = useQuery({
+  const { isFetching, isSuccess, data } = useQuery({
     queryKey: ["users", "profile"],
     queryFn: async () => {
       try {
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ signedIn: isSuccess && signedIn, signin, signout }}
+      value={{ signedIn: isSuccess && signedIn, user: data, signin, signout }}
     >
       <LaunchScreen isLoading={isFetching} />
 

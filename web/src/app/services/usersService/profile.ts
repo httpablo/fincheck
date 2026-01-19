@@ -1,9 +1,7 @@
+import type { User } from "../../entities/User";
 import { httpClient } from "../httpClient";
 
-interface ProfileResponse {
-  name: string;
-  email: string;
-}
+type ProfileResponse = User;
 
 export async function profile() {
   const { data } = await httpClient.get<ProfileResponse>("/users/profile");
