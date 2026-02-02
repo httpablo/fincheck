@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -22,8 +22,8 @@ model User {
 
 enum BankAccountType {
   CHECKING
-  SAVINGS
-  CREDIT
+  CASH
+  INVESTMENT
 
   @@map("bank_account_type")
 }
