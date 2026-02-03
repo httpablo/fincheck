@@ -21,8 +21,7 @@ O Fincheck é uma aplicação de controle de finanças pessoais que permite aos 
 ## Screenshots
 
 <p align="center">
-  <img src="https://via.placeholder.com/400x250.png?text=Dashboard" alt="Dashboard Screenshot" style="margin-right: 10px;">
-  <img src="https://via.placeholder.com/400x250.png?text=Transações" alt="Transactions Screenshot">
+  <img src=".github/dashboard.png" alt="Dashboard Screenshot">
 </p>
 
 ## Funcionalidades
