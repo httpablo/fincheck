@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { currencyStringToNumber } from "../../../../../app/utils/currencyStringToNumber";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 const schema = z.object({
   initialBalance: z.string().min(1, "Saldo inicial é obrigatório"),
@@ -31,6 +32,17 @@ export function useNewAccountModalController() {
     resolver: zodResolver(schema),
   });
 
+  useEffect(() => {
+    if (!isNewAccountModalOpen) {
+      reset({
+        name: "",
+        initialBalance: "0",
+        color: "",
+        type: "CHECKING",
+      });
+    }
+  }, [isNewAccountModalOpen, reset]);
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -50,7 +62,6 @@ export function useNewAccountModalController() {
       await queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
       toast.success("Conta criada com sucesso!");
       closeNewAccountModal();
-      reset();
     } catch {
       toast.error("Erro ao criar conta!");
     }

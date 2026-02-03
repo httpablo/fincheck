@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useForm } from "react-hook-form";
 import { useBankAccounts } from "../../../../../app/hooks/useBankAccounts";
 import { useCategories } from "../../../../../app/hooks/useCategories";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { transactionService } from "../../../../../app/services/transactionsService";
 import { currencyStringToNumber } from "../../../../../app/utils/currencyStringToNumber";
@@ -37,6 +37,18 @@ export function useNewTransactionModalController() {
     resolver: zodResolver(schema),
   });
 
+  useEffect(() => {
+    if (!isNewTransactionModalOpen) {
+      reset({
+        name: "",
+        value: "0",
+        bankAccountId: "",
+        categoryId: "",
+        date: new Date(),
+      });
+    }
+  }, [isNewTransactionModalOpen, reset]);
+
   const queryClient = useQueryClient();
   const { accounts } = useBankAccounts();
   const { categories: categoriesList } = useCategories();
@@ -62,7 +74,6 @@ export function useNewTransactionModalController() {
           : "Despesa criada com sucesso!"
       );
       closeNewTransactionModal();
-      reset();
     } catch {
       toast.error(
         newTransactionType === "INCOME"

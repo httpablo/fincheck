@@ -86,7 +86,7 @@ export class TransactionsService {
     });
 
     return this.transactionsRepo.update({
-      where: { id: transactionId },
+      where: { id: transactionId, userId },
       data: {
         bankAccountId,
         categoryId,
@@ -105,7 +105,7 @@ export class TransactionsService {
     });
 
     await this.transactionsRepo.delete({
-      where: { id: transactionId },
+      where: { id: transactionId, userId },
     });
   }
 

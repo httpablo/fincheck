@@ -70,7 +70,7 @@ export class BankAccountsService {
     const { color, initialBalance, name, type } = updateBankAccountDto;
 
     return this.bankAccountsRepo.update({
-      where: { id: bankAccountId },
+      where: { id: bankAccountId, userId },
       data: {
         color,
         initialBalance,
@@ -87,7 +87,7 @@ export class BankAccountsService {
     );
 
     await this.bankAccountsRepo.delete({
-      where: { id: bankAccountId },
+      where: { id: bankAccountId, userId },
     });
   }
 }
