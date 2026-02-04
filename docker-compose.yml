@@ -1,0 +1,53 @@
+services:
+  web:
+    build:
+      context: ./web
+      args:
+        - VITE_API_URL=http://localhost:3000
+    container_name: fincheck-web
+    ports:
+      - "8080:80"
+    networks:
+      - fincheck-net
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    container_name: fincheck-api
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - JWT_SECRET=${JWT_SECRET}
+    networks:
+      - fincheck-net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15
+    container_name: fincheck-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - fincheck-data:/var/lib/postgresql/data
+    networks:
+      - fincheck-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  fincheck-data:
+
+networks:
+  fincheck-net:
+    driver: bridge

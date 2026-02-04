@@ -5,7 +5,7 @@ import {
   IsNumber,
   IsString,
 } from 'class-validator';
-import { BankAccountType } from '@prisma/client';
+import { BankAccountType } from '../entities/BankAccount';
 
 export class CreateBankAccountDto {
   @IsString()
