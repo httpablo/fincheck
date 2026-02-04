@@ -88,5 +88,3 @@ A aplicação estará disponível em `http://localhost:8080`.
 ## Documentação Completa
 
 Para mais detalhes sobre a arquitetura, endpoints da API e guias de desenvolvimento, consulte nossa [**documentação completa**](./docs/index.md).
-
-## Contribuição
