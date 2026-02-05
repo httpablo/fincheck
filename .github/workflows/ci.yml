@@ -47,6 +47,7 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_WEB }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          echo "VITE_API_URL=/api/v1" > ./web/.env.production
           echo "Building Web image..."
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f web/Dockerfile ./web
           echo "Pushing Web image to ECR..."
