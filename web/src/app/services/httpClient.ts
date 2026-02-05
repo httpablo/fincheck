@@ -3,7 +3,7 @@ import { localStorageKeys } from "../config/localStorageKeys";
 import { sleep } from "../utils/sleep";
 
 export const httpClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || "/api/v1",
 });
 
 httpClient.interceptors.request.use((config) => {
