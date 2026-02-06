@@ -14,6 +14,7 @@ async function bootstrap() {
     origin: [
       'https://fincheckhttpablo.app',
       'https://www.fincheckhttpablo.app',
+      'http://localhost:8080',
       'http://localhost:5173',
       'http://localhost:3000',
     ],

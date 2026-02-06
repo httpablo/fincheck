@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import type { SignupParams } from "../../../app/services/authService/signup";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../app/hooks/useAuth";
+import { AxiosError } from "axios";
 
 const schema = z.object({
   name: z.string().nonempty({ message: "O nome é obrigatório" }),
@@ -21,6 +22,7 @@ export function useRegisterController() {
   const {
     handleSubmit: hookFormSubmit,
     register,
+    setError,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -42,7 +44,17 @@ export function useRegisterController() {
       const { accessToken } = await mutateAsync(data);
 
       signin(accessToken);
-    } catch {
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 409) {
+          setError("email", {
+            type: "manual",
+            message: "Este e-mail já está em uso.",
+          });
+          return;
+        }
+      }
+
       toast.error("Erro ao criar a conta!");
     }
   });
