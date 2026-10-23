@@ -3,7 +3,7 @@ services:
     build:
       context: ./web
       args:
-        - VITE_API_URL=http://localhost:3000
+        - VITE_API_URL=http://localhost:3000/api/v1
     container_name: fincheck-web
     ports:
       - "8080:80"
