@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useWindowWidth } from "../../../../../app/hooks/useWindowWidth";
 import { useDashboard } from "../DashboardContext/useDashboard";
 import { useBankAccounts } from "../../../../../app/hooks/useBankAccounts";
+import { sumMoney } from "../../../../../app/utils/sumMoney";
 
 export function useAccountsController() {
   const windowWidth = useWindowWidth();
@@ -22,7 +23,7 @@ export function useAccountsController() {
   const { accounts, isFetching } = useBankAccounts();
 
   const currentBalance = useMemo(() => {
-    return accounts.reduce((acc, account) => acc + account.currentBalance, 0);
+    return sumMoney(accounts.map((account) => account.currentBalance));
   }, [accounts]);
 
   return {

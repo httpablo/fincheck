@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateBankAccountDto } from '../dto/create-bank-account.dto';
 import { BankAccountRepository } from 'src/shared/database/repositories/bank-accounts.repositories';
 import { TransactionRepository } from 'src/shared/database/repositories/transations.repositories';
@@ -38,16 +39,14 @@ export class BankAccountsService {
     return bankAccounts.map((bankAccount) => {
       const totalTransactions = transactionsValues
         .filter((item) => item.bankAccountId === bankAccount.id)
-        .reduce(
-          (acc, item) =>
-            acc +
-            (item.type === 'INCOME'
-              ? (item._sum.value ?? 0)
-              : -(item._sum.value ?? 0)),
-          0,
-        );
+        .reduce((acc, item) => {
+          const value = item._sum.value ?? new Prisma.Decimal(0);
+          return item.type === 'INCOME' ? acc.plus(value) : acc.minus(value);
+        }, new Prisma.Decimal(0));
 
-      const currentBalance = bankAccount.initialBalance + totalTransactions;
+      const currentBalance = new Prisma.Decimal(
+        bankAccount.initialBalance,
+      ).plus(totalTransactions);
 
       return {
         ...bankAccount,

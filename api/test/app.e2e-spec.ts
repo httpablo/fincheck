@@ -186,8 +186,230 @@ describe('Fincheck API (e2e)', () => {
 
       expect(account).toBeDefined();
       expect(account.initialBalance).toBe(1000);
+      expect(typeof account.initialBalance).toBe('number');
       // Saldo esperado: 1000 (inicial) + 500 (receita) - 200 (despesa) = 1300
       expect(account.currentBalance).toBe(1300);
+      expect(typeof account.currentBalance).toBe('number');
+    });
+
+    it('deve criar transações de 0.1 e 0.2 e conferir currentBalance exato e como number no JSON', async () => {
+      const accountRes = await request(app.getHttpServer())
+        .post('/api/v1/bank-accounts')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          name: 'Conta Precisão Decimal',
+          initialBalance: 0,
+          type: 'CHECKING',
+          color: '#333333',
+        })
+        .expect(201);
+
+      expect(typeof accountRes.body.initialBalance).toBe('number');
+      expect(accountRes.body.initialBalance).toBe(0);
+      const precisionAccountId = accountRes.body.id;
+
+      const tx1Res = await request(app.getHttpServer())
+        .post('/api/v1/transactions')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          bankAccountId: precisionAccountId,
+          categoryId: incomeCategoryId,
+          name: 'Entrada 0.1',
+          value: 0.1,
+          date: '2026-10-20T10:00:00.000Z',
+          type: 'INCOME',
+        })
+        .expect(201);
+
+      expect(typeof tx1Res.body.value).toBe('number');
+      expect(tx1Res.body.value).toBe(0.1);
+
+      const tx2Res = await request(app.getHttpServer())
+        .post('/api/v1/transactions')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          bankAccountId: precisionAccountId,
+          categoryId: incomeCategoryId,
+          name: 'Entrada 0.2',
+          value: 0.2,
+          date: '2026-10-21T10:00:00.000Z',
+          type: 'INCOME',
+        })
+        .expect(201);
+
+      expect(typeof tx2Res.body.value).toBe('number');
+      expect(tx2Res.body.value).toBe(0.2);
+
+      const accountsRes = await request(app.getHttpServer())
+        .get('/api/v1/bank-accounts')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .expect(200);
+
+      const precisionAccount = accountsRes.body.find(
+        (acc: { id: string }) => acc.id === precisionAccountId,
+      );
+
+      expect(precisionAccount).toBeDefined();
+      expect(precisionAccount.currentBalance).toBe(0.3);
+      expect(typeof precisionAccount.currentBalance).toBe('number');
+      expect(typeof precisionAccount.initialBalance).toBe('number');
+
+      const txsRes = await request(app.getHttpServer())
+        .get(
+          `/api/v1/transactions?month=9&year=2026&bankAccountId=${precisionAccountId}`,
+        )
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .expect(200);
+
+      expect(txsRes.body.length).toBe(2);
+      txsRes.body.forEach((tx: { value: unknown }) => {
+        expect(typeof tx.value).toBe('number');
+      });
+    });
+
+    it('deve retornar 400 ao enviar valor com 3 casas decimais ou que excede DECIMAL(12,2)', async () => {
+      // 3 casas decimais em POST /transactions
+      await request(app.getHttpServer())
+        .post('/api/v1/transactions')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          bankAccountId,
+          categoryId: incomeCategoryId,
+          name: 'Valor com 3 decimais',
+          value: 10.123,
+          date: '2026-10-10T10:00:00.000Z',
+          type: 'INCOME',
+        })
+        .expect(400);
+
+      // 3 casas decimais em POST /bank-accounts
+      await request(app.getHttpServer())
+        .post('/api/v1/bank-accounts')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          name: 'Conta 3 decimais',
+          initialBalance: 100.999,
+          type: 'CHECKING',
+          color: '#ffffff',
+        })
+        .expect(400);
+
+      // Valor excedendo DECIMAL(12,2) (>= 10 000 000 000)
+      await request(app.getHttpServer())
+        .post('/api/v1/transactions')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          bankAccountId,
+          categoryId: incomeCategoryId,
+          name: 'Valor muito grande',
+          value: 10000000000,
+          date: '2026-10-10T10:00:00.000Z',
+          type: 'INCOME',
+        })
+        .expect(400);
+
+      await request(app.getHttpServer())
+        .post('/api/v1/bank-accounts')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          name: 'Saldo muito grande',
+          initialBalance: 10000000000,
+          type: 'CHECKING',
+          color: '#ffffff',
+        })
+        .expect(400);
+    });
+
+    it('deve garantir que initialBalance, value e currentBalance chegam como number no JSON nas respostas', async () => {
+      // POST /bank-accounts
+      const accRes = await request(app.getHttpServer())
+        .post('/api/v1/bank-accounts')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          name: 'Conta Formato JSON',
+          initialBalance: 1520.2,
+          type: 'CHECKING',
+          color: '#123456',
+        })
+        .expect(201);
+
+      expect(typeof accRes.body.initialBalance).toBe('number');
+      expect(accRes.body.initialBalance).toBe(1520.2);
+
+      // PUT /bank-accounts
+      const updateAccRes = await request(app.getHttpServer())
+        .put(`/api/v1/bank-accounts/${accRes.body.id}`)
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          name: 'Conta Formato JSON Editada',
+          initialBalance: 3250.45,
+          type: 'CHECKING',
+          color: '#654321',
+        })
+        .expect(200);
+
+      expect(typeof updateAccRes.body.initialBalance).toBe('number');
+      expect(updateAccRes.body.initialBalance).toBe(3250.45);
+
+      // POST /transactions
+      const txRes = await request(app.getHttpServer())
+        .post('/api/v1/transactions')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          bankAccountId: accRes.body.id,
+          categoryId: incomeCategoryId,
+          name: 'Receita Formato JSON',
+          value: 250.5,
+          date: '2026-10-15T10:00:00.000Z',
+          type: 'INCOME',
+        })
+        .expect(201);
+
+      expect(typeof txRes.body.value).toBe('number');
+      expect(txRes.body.value).toBe(250.5);
+
+      // PUT /transactions
+      const updateTxRes = await request(app.getHttpServer())
+        .put(`/api/v1/transactions/${txRes.body.id}`)
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .send({
+          bankAccountId: accRes.body.id,
+          categoryId: incomeCategoryId,
+          name: 'Receita Formato JSON Editada',
+          value: 300.75,
+          date: '2026-10-15T10:00:00.000Z',
+          type: 'INCOME',
+        })
+        .expect(200);
+
+      expect(typeof updateTxRes.body.value).toBe('number');
+      expect(updateTxRes.body.value).toBe(300.75);
+
+      // GET /bank-accounts
+      const listAccRes = await request(app.getHttpServer())
+        .get('/api/v1/bank-accounts')
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .expect(200);
+
+      const foundAcc = listAccRes.body.find(
+        (a: { id: string }) => a.id === accRes.body.id,
+      );
+      expect(typeof foundAcc.initialBalance).toBe('number');
+      expect(typeof foundAcc.currentBalance).toBe('number');
+      expect(foundAcc.initialBalance).toBe(3250.45);
+      expect(foundAcc.currentBalance).toBe(3551.2);
+
+      // GET /transactions
+      const listTxRes = await request(app.getHttpServer())
+        .get(
+          `/api/v1/transactions?month=9&year=2026&bankAccountId=${accRes.body.id}`,
+        )
+        .set('Authorization', `Bearer ${tokenUserA}`)
+        .expect(200);
+
+      expect(listTxRes.body.length).toBe(1);
+      expect(typeof listTxRes.body[0].value).toBe('number');
+      expect(listTxRes.body[0].value).toBe(300.75);
     });
 
     it('deve retornar 400 para filtros inválidos em GET /transactions', async () => {

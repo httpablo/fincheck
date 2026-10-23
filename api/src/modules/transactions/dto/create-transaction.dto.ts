@@ -6,6 +6,7 @@ import {
   IsPositive,
   IsString,
   IsUUID,
+  Max,
 } from 'class-validator';
 import { TransactionType } from '@prisma/client';
 
@@ -24,9 +25,10 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   name!: string;
 
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @IsNotEmpty()
   @IsPositive()
+  @Max(9999999999.99)
   value!: number;
 
   @IsNotEmpty()

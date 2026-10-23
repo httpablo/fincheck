@@ -88,6 +88,7 @@ O frontend só conversa com a API, sempre pelo prefixo `/api/v1` e com o token n
 - **Todas as rotas são privadas por padrão.** O `AuthGuard` é registrado como guard global, e só cadastro, login e a rota `/api/v1/health` são marcados com `@IsPublic`.
 - **Recurso de outro usuário responde `404`.** Antes de criar, editar ou excluir, a API confere se a conta, a categoria ou a transação pertence a quem fez o pedido, sem revelar que o registro existe.
 - **O saldo não é gravado no banco.** O saldo atual de cada conta é calculado na hora somando as movimentações direto no banco com `groupBy`, a partir do saldo inicial, sem carregar todas as transações para a memória da API.
+- **Valores monetários em `DECIMAL(12,2)`.** O banco guarda saldos e transações em `DECIMAL(12,2)` e a API rejeita entradas com mais de duas casas decimais. A API faz as somas em Decimal (`Prisma.Decimal`), um interceptor global devolve os valores como `number` no JSON e o frontend soma em centavos.
 - **Limite de 10 tentativas por minuto no login e no cadastro.** As rotas de autenticação usam `@nestjs/throttler` para barrar ataques de força bruta, limitando as requisições por IP.
 - **Rota pública de verificação de saúde.** O endpoint `/api/v1/health` é público e confere a conexão com o banco de dados antes de responder, sendo usado no teste de saúde dos containers e em monitoramentos.
 - **Origens de CORS configuráveis.** As origens permitidas são lidas da variável `CORS_ORIGINS`, mantendo as URLs de produção como padrão e liberando portas locais apenas fora de produção.
@@ -176,4 +177,4 @@ npx prisma migrate deploy
 DATABASE_URL=postgresql://fincheck:fincheck@localhost:5432/fincheck JWT_SECRET=test-jwt-secret yarn test:e2e
 ```
 
-São 22 testes unitários na API e 32 testes no frontend, além da suíte de testes e2e na API contra o PostgreSQL. O GitHub Actions roda lint, testes e build da API e do frontend a cada push na `main` e em cada pull request.
+São 28 testes unitários na API e 40 testes no frontend, além da suíte de testes e2e na API contra o PostgreSQL. O GitHub Actions roda lint, testes e build da API e do frontend a cada push na `main` e em cada pull request.

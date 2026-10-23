@@ -3,6 +3,7 @@ import { DashboardContext } from "./dashboardContext";
 import type { BankAccount } from "../../../../../app/entities/BankAccount";
 import type { TransactionsFilters } from "../../../../../app/services/transactionsService/getAll";
 import { useTransactions } from "../../../../../app/hooks/useTransactions";
+import { sumMoney, subtractMoney } from "../../../../../app/utils/sumMoney";
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [areValuesVisible, setAreValuesVisible] = useState(true);
@@ -31,21 +32,24 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   });
 
   const monthSummary = useMemo(() => {
-    let incomes = 0;
-    let expenses = 0;
+    const incomeValues: number[] = [];
+    const expenseValues: number[] = [];
 
     for (const transaction of allTransactions) {
       if (transaction.type === "INCOME") {
-        incomes += transaction.value;
+        incomeValues.push(transaction.value);
       } else if (transaction.type === "EXPENSE") {
-        expenses += transaction.value;
+        expenseValues.push(transaction.value);
       }
     }
+
+    const incomes = sumMoney(incomeValues);
+    const expenses = sumMoney(expenseValues);
 
     return {
       incomes,
       expenses,
-      balance: incomes - expenses,
+      balance: subtractMoney(incomes, expenses),
     };
   }, [allTransactions]);
 
