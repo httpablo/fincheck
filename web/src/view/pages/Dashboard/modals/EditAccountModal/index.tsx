@@ -25,102 +25,105 @@ export function EditAccountModal() {
     isLoadingDelete,
   } = useEditAccountModalController();
 
-  if (isDeleteModalOpen) {
-    return (
-      <ConfirmDelete
-        title="Tem certeza que deseja excluir essa conta?"
-        description="Ao excluir a conta, também serão excluídos todos os registros de
-        receita e despesas relacionados."
-        isLoading={isLoadingDelete}
-        onClose={handleCloseDeleteModal}
-        onConfirm={handleDeleteAccount}
-      />
-    );
-  }
-
   return (
-    <Modal
-      title="Editar Conta"
-      open={isEditAccountModalOpen}
-      onClose={closeEditAccountModal}
-      rightAction={
-        <button onClick={handleOpenDeleteModal}>
-          <TrashIcon className="w-6 h-6 text-red-600" />
-        </button>
-      }
-    >
-      <form onSubmit={handleSubmit}>
-        <div>
-          <span className="text-gray-600 tracking-[-0.5px] text-xs">
-            Saldo inicial
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-600 tracking-[-0.5px] text-lg">R$ </span>
+    <>
+      <Modal
+        title="Editar Conta"
+        open={isEditAccountModalOpen}
+        onClose={closeEditAccountModal}
+        rightAction={
+          <button
+            onClick={handleOpenDeleteModal}
+            aria-label="Excluir conta"
+            className="w-11 h-11 flex items-center justify-center outline-none hover:bg-red-50 rounded-full transition-colors cursor-pointer"
+          >
+            <TrashIcon className="w-6 h-6 text-red-600" />
+          </button>
+        }
+      >
+        <form onSubmit={handleSubmit}>
+          <div>
+            <span className="text-gray-600 tracking-[-0.5px] text-xs">
+              Saldo inicial
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600 tracking-[-0.5px] text-lg">R$ </span>
+
+              <Controller
+                control={control}
+                defaultValue="0"
+                name="initialBalance"
+                render={({ field: { onChange, value } }) => (
+                  <InputCurrency
+                    error={errors.initialBalance?.message}
+                    onChange={onChange}
+                    value={value}
+                  />
+                )}
+              />
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col gap-4">
+            <Input
+              type="text"
+              placeholder="Nome da conta"
+              error={errors.name?.message}
+              {...register("name")}
+            />
 
             <Controller
               control={control}
-              defaultValue="0"
-              name="initialBalance"
+              name="type"
+              defaultValue="CHECKING"
               render={({ field: { onChange, value } }) => (
-                <InputCurrency
-                  error={errors.initialBalance?.message}
+                <Select
+                  placeholder="Tipo de conta"
+                  error={errors.type?.message}
+                  onChange={onChange}
+                  value={value}
+                  options={[
+                    { value: "CHECKING", label: "Conta Corrente" },
+                    { value: "CASH", label: "Dinheiro Físico" },
+                    { value: "INVESTMENT", label: "Investimento" },
+                  ]}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="color"
+              defaultValue=""
+              render={({ field: { onChange, value } }) => (
+                <ColorsDropdownInput
+                  error={errors.color?.message}
                   onChange={onChange}
                   value={value}
                 />
               )}
             />
           </div>
-        </div>
 
-        <div className="mt-10 flex flex-col gap-4">
-          <Input
-            type="text"
-            placeholder="Nome da conta"
-            error={errors.name?.message}
-            {...register("name")}
-          />
+          <Button
+            type="submit"
+            className="mt-6 w-full cursor-pointer"
+            isLoading={isLoading}
+          >
+            Salvar
+          </Button>
+        </form>
+      </Modal>
 
-          <Controller
-            control={control}
-            name="type"
-            defaultValue="CHECKING"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                placeholder="Tipo de conta"
-                error={errors.type?.message}
-                onChange={onChange}
-                value={value}
-                options={[
-                  { value: "CHECKING", label: "Conta Corrente" },
-                  { value: "CASH", label: "Dinheiro Físico" },
-                  { value: "INVESTMENT", label: "Investimento" },
-                ]}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="color"
-            defaultValue=""
-            render={({ field: { onChange, value } }) => (
-              <ColorsDropdownInput
-                error={errors.color?.message}
-                onChange={onChange}
-                value={value}
-              />
-            )}
-          />
-        </div>
-
-        <Button
-          type="submit"
-          className="mt-6 w-full cursor-pointer"
-          isLoading={isLoading}
-        >
-          Salvar
-        </Button>
-      </form>
-    </Modal>
+      {isDeleteModalOpen && (
+        <ConfirmDelete
+          title="Tem certeza que deseja excluir essa conta?"
+          description="Ao excluir a conta, também serão excluídos todos os registros de receita e despesas relacionados."
+          isLoading={isLoadingDelete}
+          onClose={handleCloseDeleteModal}
+          onConfirm={handleDeleteAccount}
+        />
+      )}
+    </>
   );
 }

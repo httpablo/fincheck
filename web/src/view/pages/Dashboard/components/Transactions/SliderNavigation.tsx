@@ -7,15 +7,17 @@ export function SliderNavigation() {
   return (
     <>
       <button
-        className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-gradi z-10"
+        className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-linear-to-r from-gray-100 to-transparent z-10"
         onClick={() => swiper.slidePrev()}
+        aria-label="Mês anterior"
       >
         <ChevronLeftIcon className="w-6 h-6 text-gray-800" />
       </button>
 
       <button
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-gradi z-10 "
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-linear-to-l from-gray-100 to-transparent z-10"
         onClick={() => swiper.slideNext()}
+        aria-label="Próximo mês"
       >
         <ChevronRightIcon className="w-6 h-6 text-gray-800" />
       </button>

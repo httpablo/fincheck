@@ -15,6 +15,7 @@ import { TransactionRepository } from './repositories/transations.repositories';
     TransactionRepository,
   ],
   exports: [
+    PrismaService,
     UserRepository,
     CategoriesRepository,
     BankAccountRepository,

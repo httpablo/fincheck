@@ -1,5 +1,7 @@
 import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 import { EyeIcon } from "../../../../components/icons/EyeIcon";
 import { AccountCard } from "./AccountCard";
@@ -20,11 +22,28 @@ export function Accounts() {
     isLoading,
     accounts,
     openNewAccountModal,
-    currentyBalance,
+    currentBalance,
+    monthSummary,
+    allTransactions,
+    filters,
   } = useAccountsController();
 
+  const currentYear = new Date().getFullYear();
+  const monthName = format(
+    new Date(filters.year, filters.month, 1),
+    "MMMM",
+    { locale: ptBR }
+  ).toLowerCase();
+
+  const monthPrefix =
+    filters.year === currentYear
+      ? `Em ${monthName}`
+      : `Em ${monthName} de ${filters.year}`;
+
+  const hasTransactions = allTransactions.length > 0;
+
   return (
-    <div className="bg-teal-900 w-full h-full rounded-2xl md:p-10 px-4 py-8 flex flex-col">
+    <div className="bg-teal-900 w-full h-full rounded-2xl md:p-10 px-4 py-8 flex flex-col justify-between">
       {isLoading && (
         <div className="w-full h-full flex items-center justify-center">
           <Spinner className="text-teal-950/50 fill-white h-10 w-10" />
@@ -44,15 +63,45 @@ export function Accounts() {
                   !areValuesVisible && "blur-md"
                 )}
               >
-                {formatCurrency(currentyBalance)}
+                {formatCurrency(currentBalance)}
               </strong>
               <button
-                className="flex items-center justify-center w-8 h-8"
+                className="flex items-center justify-center w-11 h-11 rounded-full hover:bg-white/10 transition-colors"
                 onClick={toggleValuesVisibility}
+                aria-label={
+                  areValuesVisible ? "Ocultar saldos" : "Mostrar saldos"
+                }
               >
                 <EyeIcon open={!areValuesVisible} />
               </button>
             </div>
+
+            <p className="text-sm text-teal-50 tracking-[-0.5px] mt-1">
+              {hasTransactions ? (
+                <>
+                  {monthPrefix}: entrou{" "}
+                  <span
+                    className={cn(
+                      "font-medium text-white inline-block",
+                      !areValuesVisible && "blur-md"
+                    )}
+                  >
+                    {formatCurrency(monthSummary.incomes)}
+                  </span>{" "}
+                  · saiu{" "}
+                  <span
+                    className={cn(
+                      "font-medium text-white inline-block",
+                      !areValuesVisible && "blur-md"
+                    )}
+                  >
+                    {formatCurrency(monthSummary.expenses)}
+                  </span>
+                </>
+              ) : (
+                `${monthPrefix}: nenhuma movimentação`
+              )}
+            </p>
           </div>
 
           <div className="flex-1 flex flex-col justify-end mt-10 md:mt-0">
@@ -82,10 +131,16 @@ export function Accounts() {
                 <Swiper
                   spaceBetween={16}
                   slidesPerView={windowWidth > 500 ? 2.1 : 1.2}
-                  onSlideChange={(swipper) => {
+                  onSwiper={(swiper) => {
                     setSlideState({
-                      isBeginning: swipper.isBeginning,
-                      isEnd: swipper.isEnd,
+                      isBeginning: swiper.isBeginning,
+                      isEnd: swiper.isEnd,
+                    });
+                  }}
+                  onSlideChange={(swiper) => {
+                    setSlideState({
+                      isBeginning: swiper.isBeginning,
+                      isEnd: swiper.isEnd,
                     });
                   }}
                 >

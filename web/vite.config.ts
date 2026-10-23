@@ -7,5 +7,8 @@ export default defineConfig({
   plugins: [react(), tailwind()],
   server: {
     open: true,
+    proxy: {
+      "/api": "http://localhost:3000",
+    },
   },
 });

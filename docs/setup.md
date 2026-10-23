@@ -6,10 +6,10 @@ Este guia detalha os passos necessários para configurar e executar o projeto Fi
 
 Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
--   **Node.js**: `^22.10.7` (ou uma versão compatível)
--   **Yarn**: (Opcional, mas recomendado)
--   **Docker**: Para executar o banco de dados PostgreSQL.
--   **Git**: Para clonar o repositório.
+-   **Node.js**: `22.x`
+-   **Yarn**: Gerenciador de pacotes padrão do projeto
+-   **Docker e Docker Compose**: Para executar o banco PostgreSQL e/ou os containers da aplicação
+-   **Git**: Para clonar o repositório
 
 ## Instalação
 
@@ -18,91 +18,120 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento:
 ### 1. Clonar o Repositório
 
 ```bash
-git clone https://github.com/SeuUsuario/fincheck.git
+git clone https://github.com/httpablo/fincheck.git
 cd fincheck
 ```
 
-### 2. Configurar o Backend (API)
+### 2. Configurar o Banco de Dados com Docker Compose
 
-Navegue até o diretório da API e instale as dependências:
+Antes de iniciar os containers, copie o arquivo de variáveis de ambiente de exemplo na raiz do projeto para criar o seu `.env`:
+
+```bash
+cp .env.example .env
+```
+
+O `docker-compose.yml` lê as variáveis `POSTGRES_USER`, `POSTGRES_PASSWORD` e `POSTGRES_DB` deste arquivo para configurar o container do banco.
+
+Em seguida, suba o container do PostgreSQL 15 definido no `docker-compose.yml`:
+
+```bash
+docker compose up -d db
+```
+
+O serviço subirá com as credenciais padrão:
+- **Usuário**: `fincheck`
+- **Senha**: `fincheck`
+- **Banco de dados**: `fincheck`
+- **Porta**: `5432`
+
+### 3. Configurar o Backend (API)
+
+Navegue até o diretório da API e instale as dependências com Yarn:
 
 ```bash
 cd api
-npm install
-# ou
 yarn install
 ```
 
-### 3. Configurar o Frontend (Web)
+Configure o arquivo `.env` da API a partir do exemplo:
 
-Navegue até o diretório do frontend e instale as dependências:
+```bash
+cp .env.example .env
+```
+
+Edite o arquivo `api/.env`:
+
+```env
+DATABASE_URL="postgresql://fincheck:fincheck@localhost:5432/fincheck"
+JWT_SECRET=troque-por-uma-chave-longa
+```
+
+> **Dica**: Você pode gerar um segredo JWT seguro executando `openssl rand -base64 48`.
+
+Aplique as migrations do Prisma no banco de dados:
+
+```bash
+yarn migrate:dev
+```
+
+### 4. Configurar o Frontend (Web)
+
+Navegue até o diretório do frontend e instale as dependências com Yarn:
 
 ```bash
 cd web
-npm install
-# ou
 yarn install
 ```
 
-### 4. Configurar o Banco de Dados com Docker
-
-Para facilitar a configuração, você pode usar o Docker para executar um container com o PostgreSQL.
+Configure o arquivo `.env` do frontend a partir do exemplo:
 
 ```bash
-docker run --name fincheck-db -e POSTGRES_USER=user -e POSTGRES_PASSWORD=passw@rd -e POSTGRES_DB=mydb -p 5432:5432 -d postgres
+cp .env.example .env
 ```
 
-Este comando irá criar e executar um container PostgreSQL com as credenciais e o nome do banco de dados definidos no arquivo `.env.example`.
-
-### 5. Configurar Variáveis de Ambiente
-
-O projeto utiliza variáveis de ambiente para configurar a conexão com o banco de dados e outras configurações sensíveis.
-
-#### Backend (API)
-
-Crie um arquivo `.env` na raiz do diretório `api` e adicione as seguintes variáveis:
+Edite o arquivo `web/.env`:
 
 ```env
-DATABASE_URL="postgresql://user:passw@rd@localhost:5432/mydb"
-JWT_SECRET=sua-chave-secreta-aqui
+VITE_API_URL=http://localhost:3000/api/v1
 ```
 
--   **`DATABASE_URL`**: A URL de conexão com o banco de dados PostgreSQL.
--   **`JWT_SECRET`**: Uma chave secreta para a geração de tokens JWT.
+> **Nota**: Durante o desenvolvimento local, se `VITE_API_URL` não for informado, o servidor de desenvolvimento do Vite utiliza o proxy configurado em `vite.config.ts`, encaminhando `/api` diretamente para `http://localhost:3000`.
 
-#### Frontend (Web)
+## Executando a Aplicação em Desenvolvimento
 
-O frontend não requer um arquivo `.env` para a configuração inicial, mas pode ser necessário para consumir a API. Consulte a documentação do Vite para mais detalhes sobre como configurar variáveis de ambiente no frontend.
+Com o banco de dados rodando (`docker compose up -d db`), execute a API e o frontend em terminais separados:
 
-## Executando a Aplicação
-
-### 1. Executar as Migrations do Banco de Dados
-
-Com o backend configurado e o container do Docker em execução, aplique as migrations para criar as tabelas no banco de dados:
+### 1. Iniciar o Backend
 
 ```bash
 cd api
-npx prisma migrate dev
-```
-
-### 2. Iniciar o Backend
-
-```bash
-cd api
-npm run start:dev
-# ou
 yarn start:dev
 ```
 
-O servidor da API estará disponível em `http://localhost:3000`.
+O servidor da API estará disponível em `http://localhost:3000` (com rotas sob o prefixo `/api/v1`).
 
-### 3. Iniciar o Frontend
+### 2. Iniciar o Frontend
 
 ```bash
 cd web
-npm run dev
-# ou
 yarn dev
 ```
 
 A aplicação web estará disponível em `http://localhost:5173`.
+
+## Executando o Ambiente Completo via Docker Compose
+
+Para subir toda a infraestrutura (banco PostgreSQL, API NestJS e frontend Nginx) via containers:
+
+1. Certifique-se de que o `.env` na raiz do projeto foi criado a partir do `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Inicie os containers:
+   ```bash
+   docker compose up --build
+   ```
+
+- **Frontend**: `http://localhost:8080`
+- **API**: `http://localhost:3000/api/v1`
+- **PostgreSQL**: `localhost:5432`

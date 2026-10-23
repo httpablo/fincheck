@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBankAccountDto } from '../dto/create-bank-account.dto';
 import { BankAccountRepository } from 'src/shared/database/repositories/bank-accounts.repositories';
+import { TransactionRepository } from 'src/shared/database/repositories/transations.repositories';
 import { UpdateBankAccountDto } from '../dto/update-bank-account.dto';
 import { ValidateBankAccountOwnershipService } from './validate-bank-account-ownership';
 
@@ -8,6 +9,7 @@ import { ValidateBankAccountOwnershipService } from './validate-bank-account-own
 export class BankAccountsService {
   constructor(
     private readonly bankAccountsRepo: BankAccountRepository,
+    private readonly transactionsRepo: TransactionRepository,
     private readonly validateBankAccountOwnershipService: ValidateBankAccountOwnershipService,
   ) {}
 
@@ -26,27 +28,24 @@ export class BankAccountsService {
   }
 
   async findAllByUserId(userId: string) {
-    const bankAccount = await this.bankAccountsRepo.findMany({
-      where: { userId },
-      include: {
-        transactions: {
-          select: {
-            type: true,
-            value: true,
-          },
-        },
-      },
-    });
+    const [bankAccounts, transactionsValues] = await Promise.all([
+      this.bankAccountsRepo.findMany({
+        where: { userId },
+      }),
+      this.transactionsRepo.groupByValuesByBankAccountAndType(userId),
+    ]);
 
-    return bankAccount.map(({ transactions, ...bankAccount }) => {
-      const totalTransactions = transactions.reduce(
-        (acc, transaction) =>
-          acc +
-          (transaction.type === 'INCOME'
-            ? transaction.value
-            : -transaction.value),
-        0,
-      );
+    return bankAccounts.map((bankAccount) => {
+      const totalTransactions = transactionsValues
+        .filter((item) => item.bankAccountId === bankAccount.id)
+        .reduce(
+          (acc, item) =>
+            acc +
+            (item.type === 'INCOME'
+              ? (item._sum.value ?? 0)
+              : -(item._sum.value ?? 0)),
+          0,
+        );
 
       const currentBalance = bankAccount.initialBalance + totalTransactions;
 

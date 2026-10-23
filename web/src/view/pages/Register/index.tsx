@@ -8,7 +8,7 @@ export function Register() {
 
   return (
     <>
-      <header className="bg-red flex flex-col items-center gap-4 text-center">
+      <header className="flex flex-col items-center gap-4 text-center">
         <h1 className="text-2xl font-bold text-gray-900 tracking-[-1px]">
           Crie sua conta
         </h1>
@@ -19,7 +19,7 @@ export function Register() {
           </span>
           <Link
             to="/login"
-            className="tracking-[-0.5px] font-medium text-teal-700"
+            className="tracking-[-0.5px] font-medium text-teal-900"
           >
             Fazer login
           </Link>
@@ -28,7 +28,8 @@ export function Register() {
 
       <form onSubmit={handleSubmit} className="mt-[60px] flex flex-col gap-4">
         <Input
-          type="name"
+          type="text"
+          autoComplete="name"
           placeholder="Nome"
           error={errors.name?.message}
           {...register("name")}

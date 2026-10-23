@@ -1,4 +1,5 @@
 import { UserRepository } from 'src/shared/database/repositories/users.repositories';
+import { PrismaService } from 'src/shared/database/prisma.service';
 import { SigninDto } from './dto/signin';
 import {
   ConflictException,
@@ -14,13 +15,20 @@ export class AuthService {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly jwtService: JwtService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   async signin(signinDto: SigninDto) {
-    const { email, password } = signinDto;
+    const email = signinDto.email?.trim();
+    const { password } = signinDto;
 
-    const user = await this.userRepo.findUnique({
-      where: { email },
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        email: {
+          equals: email,
+          mode: 'insensitive',
+        },
+      },
     });
 
     if (!user) {
@@ -39,10 +47,16 @@ export class AuthService {
   }
 
   async signup(signupDto: SignupDto) {
-    const { name, email, password } = signupDto;
+    const { name, password } = signupDto;
+    const email = signupDto.email?.trim().toLowerCase();
 
-    const emailTaken = await this.userRepo.findUnique({
-      where: { email },
+    const emailTaken = await this.prismaService.user.findFirst({
+      where: {
+        email: {
+          equals: email,
+          mode: 'insensitive',
+        },
+      },
       select: { id: true },
     });
 
@@ -61,7 +75,7 @@ export class AuthService {
           createMany: {
             data: [
               // Income
-              { name: 'Salário', icon: 'travel', type: 'INCOME' },
+              { name: 'Salário', icon: 'salary', type: 'INCOME' },
               { name: 'Freelance', icon: 'freelance', type: 'INCOME' },
               { name: 'Outro', icon: 'other', type: 'INCOME' },
               // Expense

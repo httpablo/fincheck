@@ -12,7 +12,10 @@ export function Fab() {
     <div className="fixed right-4 bottom-4">
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <button className="bg-teal-900 w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer">
+          <button
+            className="bg-teal-900 w-12 h-12 rounded-full flex items-center justify-center text-white cursor-pointer"
+            aria-label="Novo lançamento"
+          >
             <PlusIcon className="w-6 h-6" />
           </button>
         </DropdownMenu.Trigger>

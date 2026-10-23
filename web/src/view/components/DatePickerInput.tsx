@@ -18,16 +18,17 @@ export function DatePickerInput({
   value,
   onChange,
 }: DatePickerInputProps) {
-  const [selectedDate, setSelectedDate] = useState(value ?? new Date());
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedDate = value ?? new Date();
 
   function handleChangeDate(date: Date) {
-    setSelectedDate(date);
     onChange?.(date);
+    setIsOpen(false);
   }
 
   return (
     <div>
-      <Popover.Root>
+      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger>
           <button
             type="button"

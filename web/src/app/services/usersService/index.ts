@@ -1,5 +1,5 @@
 import { profile } from "./profile";
 
-export const userService = {
+export const usersService = {
   profile,
 };

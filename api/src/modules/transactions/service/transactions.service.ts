@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
 import { UpdateTransactionDto } from '../dto/update-transaction.dto';
 import { TransactionRepository } from 'src/shared/database/repositories/transations.repositories';
 import { ValidateBankAccountOwnershipService } from '../../bank-accounts/services/validate-bank-account-ownership';
 import { ValidateCategoryOwnershipService } from '../../categories/services/validate-category-ownership';
 import { ValidateTransactionOwnershipService } from './validate-transaction-ownership';
-import { TransactionType } from '../entities/Transaction';
+import { TransactionType } from '@prisma/client';
 
 @Injectable()
 export class TransactionsService {
@@ -24,6 +24,7 @@ export class TransactionsService {
       userId,
       bankAccountId,
       categoryId,
+      transactionType: type,
     });
 
     return this.transactionsRepo.create({
@@ -67,6 +68,9 @@ export class TransactionsService {
           },
         },
       },
+      orderBy: {
+        date: 'desc',
+      },
     });
   }
 
@@ -83,6 +87,7 @@ export class TransactionsService {
       bankAccountId,
       categoryId,
       transactionId,
+      transactionType: type,
     });
 
     return this.transactionsRepo.update({
@@ -114,13 +119,15 @@ export class TransactionsService {
     bankAccountId,
     categoryId,
     transactionId,
+    transactionType,
   }: {
     userId: string;
     bankAccountId?: string;
     categoryId?: string;
     transactionId?: string;
+    transactionType?: TransactionType;
   }) {
-    await Promise.all([
+    const [, category] = await Promise.all([
       bankAccountId &&
         this.validateBankAccountOwnershipService.validate(
           userId,
@@ -134,5 +141,11 @@ export class TransactionsService {
           transactionId,
         ),
     ]);
+
+    if (category && transactionType && category.type !== transactionType) {
+      throw new BadRequestException(
+        'Transaction type does not match category type',
+      );
+    }
   }
 }

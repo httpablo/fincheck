@@ -1,8 +1,9 @@
+import { isAxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { AuthService } from "../../../app/services/authService";
+import { authService } from "../../../app/services/authService";
 import toast from "react-hot-toast";
 import type { SigninParams } from "../../../app/services/authService/signin";
 import { useAuth } from "../../../app/hooks/useAuth";
@@ -29,7 +30,7 @@ export function useLoginController() {
 
   const mutation = useMutation({
     mutationFn: async (data: SigninParams) => {
-      return AuthService.signin(data);
+      return authService.signin(data);
     },
   });
 
@@ -43,7 +44,12 @@ export function useLoginController() {
       const { accessToken } = await mutateAsync(data);
 
       signin(accessToken);
-    } catch {
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 429) {
+        toast.error("Muitas tentativas. Aguarde um minuto e tente de novo.");
+        return;
+      }
+
       toast.error("Credenciais inválidas!");
     }
   });

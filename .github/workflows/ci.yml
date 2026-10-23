@@ -1,6 +1,6 @@
 name: CI
 
-on:
+'on':
   push:
     branches:
       - main
@@ -8,11 +8,30 @@ on:
 
 jobs:
   api:
-    name: API (lint e build)
+    name: API (lint, build e testes)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: api
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: fincheck
+          POSTGRES_PASSWORD: fincheck
+          POSTGRES_DB: fincheck
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://fincheck:fincheck@localhost:5432/fincheck
+      JWT_SECRET: test-jwt-secret-for-ci
 
     steps:
       - name: Checkout repository
@@ -21,7 +40,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: yarn
           cache-dependency-path: api/yarn.lock
 
@@ -37,8 +56,17 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Run Prisma migrations
+        run: npx prisma migrate deploy
+
+      - name: Run unit tests
+        run: yarn test
+
+      - name: Run E2E tests
+        run: yarn test:e2e
+
   web:
-    name: Web (lint e build)
+    name: Web (lint, test e build)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -51,7 +79,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: yarn
           cache-dependency-path: web/yarn.lock
 
@@ -60,6 +88,9 @@ jobs:
 
       - name: Lint
         run: yarn lint
+
+      - name: Run tests
+        run: yarn test
 
       - name: Build
         run: yarn build

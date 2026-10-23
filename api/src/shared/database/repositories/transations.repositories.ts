@@ -25,4 +25,14 @@ export class TransactionRepository {
   delete(deleteDto: Prisma.TransactionDeleteArgs) {
     return this.prismaService.transaction.delete(deleteDto);
   }
+
+  groupByValuesByBankAccountAndType(userId: string) {
+    return this.prismaService.transaction.groupBy({
+      by: ['bankAccountId', 'type'],
+      where: { userId },
+      _sum: {
+        value: true,
+      },
+    });
+  }
 }

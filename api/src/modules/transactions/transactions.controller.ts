@@ -10,15 +10,16 @@ import {
   HttpCode,
   HttpStatus,
   Query,
-  ParseIntPipe,
+  ParseEnumPipe,
 } from '@nestjs/common';
 import { TransactionsService } from './service/transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
-import { OptionalParseUUIDPipe } from 'src/shared/pipes/OptionalParseUUIDPipes';
-import { TransactionType } from './entities/Transaction';
-import { OptionalParseEnumPipe } from 'src/shared/pipes/OptionalParseEnumPipe';
+import { TransactionType } from '@prisma/client';
+import { ParseMonthPipe } from 'src/shared/pipes/ParseMonthPipe';
+import { ParseYearPipe } from 'src/shared/pipes/ParseYearPipe';
+import { EmptyStringToUndefinedPipe } from 'src/shared/pipes/EmptyStringToUndefinedPipe';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -35,10 +36,19 @@ export class TransactionsController {
   @Get()
   findAll(
     @ActiveUserId() userId: string,
-    @Query('month', ParseIntPipe) month: number,
-    @Query('year', ParseIntPipe) year: number,
-    @Query('bankAccountId', OptionalParseUUIDPipe) bankAccountId?: string,
-    @Query('type', new OptionalParseEnumPipe(TransactionType))
+    @Query('month', ParseMonthPipe) month: number,
+    @Query('year', ParseYearPipe) year: number,
+    @Query(
+      'bankAccountId',
+      new EmptyStringToUndefinedPipe(),
+      new ParseUUIDPipe({ optional: true }),
+    )
+    bankAccountId?: string,
+    @Query(
+      'type',
+      new EmptyStringToUndefinedPipe(),
+      new ParseEnumPipe(TransactionType, { optional: true }),
+    )
     type?: TransactionType,
   ) {
     return this.transactionsService.findAllByUserId(userId, {

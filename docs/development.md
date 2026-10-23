@@ -2,7 +2,12 @@
 
 Este documento fornece diretrizes para o desenvolvimento e contribuição para o projeto Fincheck.
 
-## Padrões de Código
+## Ambiente de Desenvolvimento
+
+- **Node.js**: `22.x`
+- **Gerenciador de Pacotes**: `Yarn`
+
+## Padrões de Código e Linters
 
 Para manter a consistência e a qualidade do código, utilizamos as seguintes ferramentas:
 
@@ -14,28 +19,37 @@ Para manter a consistência e a qualidade do código, utilizamos as seguintes fe
 -   **Configuração do ESLint**: `api/eslint.config.mjs`
 -   **Configuração do Prettier**: `api/.prettierrc`
 
-Para verificar e corrigir o código, utilize os seguintes comandos no diretório `api`:
+Comandos no diretório `api`:
 
 ```bash
 # Verificar e corrigir erros de lint
-npm run lint
+yarn lint
 
 # Formatar o código com Prettier
-npm run format
+yarn format
+
+# Compilar o projeto
+yarn build
+
+# Executar testes unitários
+yarn test
 ```
 
 ### Frontend (Web)
 
 -   **Configuração do ESLint**: `web/eslint.config.js`
 
-Para verificar o código no diretório `web`, utilize o seguinte comando:
+Comandos no diretório `web`:
 
 ```bash
 # Verificar erros de lint
-npm run lint
+yarn lint
+
+# Compilar o projeto (TypeScript check + Vite build)
+yarn build
 ```
 
-É altamente recomendado configurar seu editor de código para usar o ESLint e o Prettier para obter feedback em tempo real.
+Recomenda-se configurar seu editor de código para executar o ESLint e o Prettier automaticamente ao salvar.
 
 ## Guia de Contribuição
 
@@ -47,12 +61,13 @@ As contribuições são bem-vindas! Siga os passos abaixo para contribuir com o 
     git checkout -b minha-nova-feature
     ```
 3.  **Desenvolva**: Faça as alterações desejadas, seguindo os padrões de código e adicionando testes quando aplicável.
-4.  **Faça o Commit**: Faça o commit de suas alterações com uma mensagem clara e descritiva.
+4.  **Valide**: Execute os comandos de lint e build tanto na `api/` quanto na `web/`.
+5.  **Faça o Commit**: Faça o commit de suas alterações com uma mensagem clara e descritiva.
     ```bash
     git commit -m "feat: Adiciona nova feature X"
     ```
-5.  **Envie suas Alterações**: Envie suas alterações para o seu fork.
+6.  **Envie suas Alterações**: Envie suas alterações para o seu fork.
     ```bash
     git push origin minha-nova-feature
     ```
-6.  **Abra um Pull Request**: Abra um Pull Request do seu fork para o repositório principal, descrevendo as alterações realizadas.
+7.  **Abra um Pull Request**: Abra um Pull Request do seu fork para o repositório principal, descrevendo as alterações realizadas.

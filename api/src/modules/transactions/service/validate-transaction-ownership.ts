@@ -5,13 +5,15 @@ import { TransactionRepository } from 'src/shared/database/repositories/transati
 export class ValidateTransactionOwnershipService {
   constructor(private readonly transactionRepo: TransactionRepository) {}
 
-  async validate(userId: string, transactiontId: string) {
+  async validate(userId: string, transactionId: string) {
     const isOwner = await this.transactionRepo.findFirst({
-      where: { id: transactiontId, userId },
+      where: { id: transactionId, userId },
     });
 
     if (!isOwner) {
       throw new NotFoundException('Transaction not found');
     }
+
+    return isOwner;
   }
 }

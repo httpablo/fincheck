@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 import { AuthGuard } from "./AuthGuard";
 import { Login } from "../view/pages/Login";
 import { Register } from "../view/pages/Register";
@@ -19,6 +19,8 @@ export function Router() {
         <Route element={<AuthGuard isPrivate />}>
           <Route path="/" element={<Dashboard />} />
         </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

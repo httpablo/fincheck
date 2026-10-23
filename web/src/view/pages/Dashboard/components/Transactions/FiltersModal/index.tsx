@@ -1,4 +1,8 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import {
+  CheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@radix-ui/react-icons";
 import { cn } from "../../../../../../app/utils/cn";
 import { Modal } from "../../../../../components/Modal";
 import { useFiltersModal } from "./useFiltersModalController";
@@ -11,12 +15,16 @@ interface FiltersModalProps {
     bankAccountId: string | undefined;
     year: number;
   }): void;
+  bankAccountId?: string | undefined;
+  year?: number | undefined;
 }
 
 export function FiltersModal({
   open,
   onClose,
   onApplyFilters,
+  bankAccountId,
+  year,
 }: FiltersModalProps) {
   const {
     handleSelectBankAccount,
@@ -24,7 +32,11 @@ export function FiltersModal({
     handleChangeYear,
     selectedYear,
     accounts,
-  } = useFiltersModal();
+  } = useFiltersModal({
+    open,
+    bankAccountId,
+    year,
+  });
 
   return (
     <Modal open={open} onClose={onClose} title="Filtros">
@@ -32,19 +44,25 @@ export function FiltersModal({
         <span className="text-lg font-bold tracking-tightest text-gray-800">
           Conta
         </span>
-        <div className="space-y-2 mt-2">
-          {accounts.map((account) => (
-            <button
-              key={account.id}
-              onClick={() => handleSelectBankAccount(account.id)}
-              className={cn(
-                "p-2 rounded-2xl w-full text-left hover:bg-gray-50 text-gray-800 transition-colors",
-                account.id === selectedBankAccountId && "bg-gray-200"
-              )}
-            >
-              {account.name}
-            </button>
-          ))}
+        <div className="space-y-2 mt-2 max-h-60 overflow-y-auto">
+          {accounts.map((account) => {
+            const isSelected = account.id === selectedBankAccountId;
+
+            return (
+              <button
+                key={account.id}
+                onClick={() => handleSelectBankAccount(account.id)}
+                className={cn(
+                  "p-2.5 rounded-2xl w-full text-left flex items-center justify-between hover:bg-gray-50 text-gray-800 transition-colors cursor-pointer",
+                  isSelected &&
+                    "bg-teal-50 text-teal-900 font-medium hover:bg-teal-100/70"
+                )}
+              >
+                <span>{account.name}</span>
+                {isSelected && <CheckIcon className="w-5 h-5 text-teal-900" />}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -55,6 +73,7 @@ export function FiltersModal({
             <button
               onClick={() => handleChangeYear(-1)}
               className="w-12 h-12 flex items-center justify-center"
+              aria-label="Ano anterior"
             >
               <ChevronLeftIcon className="w-6 h-6" />
             </button>
@@ -66,6 +85,7 @@ export function FiltersModal({
             <button
               onClick={() => handleChangeYear(+1)}
               className="w-12 h-12 flex items-center justify-center"
+              aria-label="Próximo ano"
             >
               <ChevronRightIcon className="w-6 h-6" />
             </button>

@@ -15,9 +15,17 @@ export function AccountCard({ data }: AccountCardProps) {
 
   return (
     <div
-      className="p-4 bg-white border rounded-2xl h-[200px] flex flex-col justify-between border-b-4 border-b-teal-950 cursor-pointer"
+      role="button"
+      tabIndex={0}
+      className="p-4 bg-white border rounded-2xl h-[200px] flex flex-col justify-between border-b-4 border-b-teal-950 cursor-pointer hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-900 transition-colors"
       style={{ borderBottomColor: color }}
       onClick={() => openEditAccountModal(data)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openEditAccountModal(data);
+        }
+      }}
     >
       <div>
         <BankAccountTypeIcon type={type} />

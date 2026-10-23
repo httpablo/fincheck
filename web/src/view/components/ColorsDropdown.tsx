@@ -1,5 +1,4 @@
 import { ChevronDownIcon, CrossCircledIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
 import { cn } from "../../app/utils/cn";
 import { ColorIcon } from "./icons/ColorIcon";
 import { DropdownMenu } from "./Dropdown";
@@ -14,23 +13,24 @@ interface ColorsDropDownInputProps {
 type Color = {
   color: string;
   bg: string;
+  label: string;
 };
 
 const colors: Color[] = [
-  { color: "#FA5252", bg: "#FFF5F5" },
-  { color: "#E64980", bg: "#FFF0F6" },
-  { color: "#BE4BDB", bg: "#F8F0FC" },
-  { color: "#7950F2", bg: "#F3F0FF" },
-  { color: "#4C6EF5", bg: "#EDF2FF" },
-  { color: "#228BE6", bg: "#E7F5FF" },
-  { color: "#15AABF", bg: "#E3FAFC" },
-  { color: "#12B886", bg: "#E6FCF5" },
-  { color: "#40C057", bg: "#EBFBEE" },
-  { color: "#82C91E", bg: "#F4FCE3" },
-  { color: "#FAB005", bg: "#FFF9DB" },
-  { color: "#FD7E14", bg: "#FFF4E6" },
-  { color: "#868E96", bg: "#F8F9FA" },
-  { color: "#212529", bg: "#F8F9FA" },
+  { color: "#FA5252", bg: "#FFF5F5", label: "Vermelho" },
+  { color: "#E64980", bg: "#FFF0F6", label: "Rosa" },
+  { color: "#BE4BDB", bg: "#F8F0FC", label: "Roxo" },
+  { color: "#7950F2", bg: "#F3F0FF", label: "Violeta" },
+  { color: "#4C6EF5", bg: "#EDF2FF", label: "Azul escuro" },
+  { color: "#228BE6", bg: "#E7F5FF", label: "Azul" },
+  { color: "#15AABF", bg: "#E3FAFC", label: "Ciano" },
+  { color: "#12B886", bg: "#E6FCF5", label: "Verde-água" },
+  { color: "#40C057", bg: "#EBFBEE", label: "Verde" },
+  { color: "#82C91E", bg: "#F4FCE3", label: "Lima" },
+  { color: "#FAB005", bg: "#FFF9DB", label: "Amarelo" },
+  { color: "#FD7E14", bg: "#FFF4E6", label: "Laranja" },
+  { color: "#868E96", bg: "#F8F9FA", label: "Cinza" },
+  { color: "#212529", bg: "#F8F9FA", label: "Preto" },
 ];
 
 export function ColorsDropdownInput({
@@ -39,13 +39,9 @@ export function ColorsDropdownInput({
   value,
   onChange,
 }: ColorsDropDownInputProps) {
-  const [selectedColor, setSelectedColor] = useState<null | Color>(() => {
-    if (!value) return null;
-    return colors.find((color) => color.color === value) || null;
-  });
+  const selectedColor = colors.find((color) => color.color === value) || null;
 
   function handleSelectColor(color: Color) {
-    setSelectedColor(color);
     onChange?.(color.color);
   }
 
@@ -75,6 +71,7 @@ export function ColorsDropdownInput({
           {colors.map((color) => (
             <DropdownMenu.Item
               key={color.color}
+              aria-label={color.label}
               onSelect={() => handleSelectColor(color)}
             >
               <ColorIcon color={color.color} bg={color.bg} />

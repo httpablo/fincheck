@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { AuthService } from "../../../app/services/authService";
+import { authService } from "../../../app/services/authService";
 import { useMutation } from "@tanstack/react-query";
 import type { SignupParams } from "../../../app/services/authService/signup";
 import toast from "react-hot-toast";
@@ -30,7 +30,7 @@ export function useRegisterController() {
 
   const mutation = useMutation({
     mutationFn: async (data: SignupParams) => {
-      return AuthService.signup(data);
+      return authService.signup(data);
     },
   });
 
@@ -46,6 +46,11 @@ export function useRegisterController() {
       signin(accessToken);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 429) {
+          toast.error("Muitas tentativas. Aguarde um minuto e tente de novo.");
+          return;
+        }
+
         if (error.response.status === 409) {
           setError("email", {
             type: "manual",

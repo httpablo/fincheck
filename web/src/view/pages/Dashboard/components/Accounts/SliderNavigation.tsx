@@ -18,6 +18,7 @@ export function SliderNavigation({
         className="py-3 pl-2.5 pr-3.5 rounded-full enabled:hover:bg-black/10 transition-colors disabled:opacity-40"
         onClick={() => swiper.slidePrev()}
         disabled={isBeginning}
+        aria-label="Conta anterior"
       >
         <ChevronLeftIcon className="text-white w-6 h-6" />
       </button>
@@ -25,6 +26,7 @@ export function SliderNavigation({
         className="py-3 pl-2.5 pr-3.5 rounded-full enabled:hover:bg-black/10 transition-colors disabled:opacity-40"
         onClick={() => swiper.slideNext()}
         disabled={isEnd}
+        aria-label="Próxima conta"
       >
         <ChevronRightIcon className="text-white w-6 h-6" />
       </button>

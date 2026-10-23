@@ -26,7 +26,7 @@ export function DatePicker({ onChange, value }: DatePickerProps) {
           "text-teal-900 items-center justify-center !bg-transparent",
         button_next:
           "text-teal-900 items-center justify-center !bg-transparent",
-        weekday: "uppercase text-xs text-gray-500 font-medium pt-1 pb-2",
+        weekday: "uppercase text-xs text-gray-700 font-medium pt-1 pb-2",
         day_button: " cursor-pointer w-10 h-10 hover:bg-teal-100 rounded-full",
         today: "bg-gray-100 font-bold text-gray-900 rounded-full",
         selected: "bg-teal-900 text-white font-medium rounded-full",

@@ -1,8 +1,22 @@
 import * as RdxPopover from "@radix-ui/react-popover";
 import { cn } from "../../../app/utils/cn";
 
-export function PopoverRoot({ children }: { children: React.ReactNode }) {
-  return <RdxPopover.Root>{children}</RdxPopover.Root>;
+interface PopoverRootProps {
+  children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?(open: boolean): void;
+}
+
+export function PopoverRoot({
+  children,
+  open,
+  onOpenChange,
+}: PopoverRootProps) {
+  return (
+    <RdxPopover.Root open={open} onOpenChange={onOpenChange}>
+      {children}
+    </RdxPopover.Root>
+  );
 }
 
 export function PopoverTrigger({ children }: { children: React.ReactNode }) {
@@ -12,12 +26,6 @@ export function PopoverTrigger({ children }: { children: React.ReactNode }) {
 interface PopoverContentProps {
   children: React.ReactNode;
   className?: string;
-}
-
-interface PopoverContentProps {
-  children: React.ReactNode;
-  className?: string;
-  onSelect?(): void;
 }
 
 export function PopoverContent({ children, className }: PopoverContentProps) {

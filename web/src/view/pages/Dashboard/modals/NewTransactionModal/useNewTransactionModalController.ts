@@ -1,17 +1,23 @@
 import z from "zod";
 import { useDashboard } from "../../components/DashboardContext/useDashboard";
-import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useBankAccounts } from "../../../../../app/hooks/useBankAccounts";
 import { useCategories } from "../../../../../app/hooks/useCategories";
 import { useMemo, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { transactionService } from "../../../../../app/services/transactionsService";
+import { transactionsService } from "../../../../../app/services/transactionsService";
 import { currencyStringToNumber } from "../../../../../app/utils/currencyStringToNumber";
 import { toast } from "react-hot-toast";
 
 const schema = z.object({
-  value: z.string().min(1, "O valor é obrigatório"),
+  value: z
+    .string()
+    .min(1, "O valor é obrigatório")
+    .refine(
+      (val) => currencyStringToNumber(val) > 0,
+      "O valor deve ser maior que zero"
+    ),
   name: z.string().min(1, "O nome é obrigatório"),
   categoryId: z.string().min(1, "A categoria é obrigatória"),
   bankAccountId: z.string().min(1, "A conta é obrigatória"),
@@ -53,7 +59,7 @@ export function useNewTransactionModalController() {
   const { accounts } = useBankAccounts();
   const { categories: categoriesList } = useCategories();
   const { status, mutateAsync } = useMutation({
-    mutationFn: transactionService.create,
+    mutationFn: transactionsService.create,
   });
   const isLoading = status === "pending";
 
@@ -63,7 +69,16 @@ export function useNewTransactionModalController() {
         ...data,
         value: currencyStringToNumber(data.value),
         type: newTransactionType!,
-        date: data.date.toISOString(),
+        date: new Date(
+          Date.UTC(
+            data.date.getFullYear(),
+            data.date.getMonth(),
+            data.date.getDate(),
+            12,
+            0,
+            0,
+          ),
+        ).toISOString(),
       });
 
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });

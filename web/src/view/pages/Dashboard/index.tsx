@@ -7,7 +7,7 @@ import { Fab } from "./components/Fab";
 import { Transactions } from "./components/Transactions";
 import { EditAccountModal } from "./modals/EditAccountModal";
 import { NewAccountModal } from "./modals/NewAccountModal";
-import { NewTranasctionModal } from "./modals/NewTransactionModal";
+import { NewTransactionModal } from "./modals/NewTransactionModal";
 
 export function Dashboard() {
   return (
@@ -20,19 +20,19 @@ export function Dashboard() {
               <UserMenu />
             </header>
 
-            <main className="flex-1 flex flex-col md:flex-row gap-4 max-h-full">
-              <div className="w-full md:w-1/2">
+            <main className="flex-1 flex flex-col md:flex-row gap-4 max-h-full min-h-0 overflow-hidden">
+              <div className="w-full md:w-1/2 md:h-full">
                 <Accounts />
               </div>
 
-              <div className="w-full md:w-1/2">
+              <div className="w-full md:w-1/2 md:h-full min-h-0">
                 <Transactions />
               </div>
             </main>
             <Fab />
             <NewAccountModal />
             {accountToEdit && <EditAccountModal />}
-            <NewTranasctionModal />
+            <NewTransactionModal />
           </div>
         )}
       </DashboardContext.Consumer>

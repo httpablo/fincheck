@@ -1,73 +1,32 @@
-# React + TypeScript + Vite
+# Fincheck Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Módulo frontend da aplicação Fincheck, desenvolvido com **React 19**, **TypeScript**, **Vite 7**, **Tailwind CSS 4** e **TanStack Query 5**.
 
-Currently, two official plugins are available:
+Para a documentação completa do projeto, configuração do ambiente e arquitetura, consulte o [README principal](../README.md) e o diretório [docs/](../docs/index.md).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Requisitos
 
-## React Compiler
+- Node.js 22.x
+- Yarn
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## Comandos Principais
 
-## Expanding the ESLint configuration
+```bash
+# Instalar dependências
+yarn install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Configurar variáveis de ambiente (opcional em dev, o Vite utiliza proxy para /api)
+cp .env.example .env
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Executar em modo de desenvolvimento (HMR)
+yarn dev
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# Compilar para produção (tsc + vite build)
+yarn build
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+# Executar verificações de lint
+yarn lint
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Visualizar build localmente
+yarn preview
 ```

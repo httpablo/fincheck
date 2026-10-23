@@ -20,10 +20,10 @@ export function Button({
       {...props}
       disabled={disabled || isLoading}
       className={cn(
-        `flex justify-center items-center bg-teal-900 hover:bg-teal-800 disabled:bg-transparent px-6 rounded-2xl h-12 font-medium text-white disabled:text-gray-400 transition-all disabled:cursor-not-allowed`,
+        "flex justify-center items-center bg-teal-900 hover:bg-teal-800 disabled:bg-gray-200 disabled:text-gray-500 px-6 rounded-2xl h-12 font-medium text-white transition-all disabled:cursor-not-allowed",
         variant === "danger" && "bg-red-900 hover:bg-red-800",
         variant === "ghost" &&
-          "bg-transparent border border-gray-800 text-gray-800 hover:bg-gray-800/5 disabled:border-0",
+          "bg-transparent border border-gray-800 text-gray-800 hover:bg-gray-800/5 disabled:bg-transparent disabled:border-gray-400 disabled:text-gray-400",
         className
       )}
     >

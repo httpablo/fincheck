@@ -5,8 +5,14 @@ import { useBankAccounts } from "../../../../../app/hooks/useBankAccounts";
 
 export function useAccountsController() {
   const windowWidth = useWindowWidth();
-  const { areValuesVisible, toggleValuesVisibility, openNewAccountModal } =
-    useDashboard();
+  const {
+    areValuesVisible,
+    toggleValuesVisibility,
+    openNewAccountModal,
+    monthSummary,
+    allTransactions,
+    filters,
+  } = useDashboard();
 
   const [slideState, setSlideState] = useState({
     isBeginning: true,
@@ -15,7 +21,7 @@ export function useAccountsController() {
 
   const { accounts, isFetching } = useBankAccounts();
 
-  const currentyBalance = useMemo(() => {
+  const currentBalance = useMemo(() => {
     return accounts.reduce((acc, account) => acc + account.currentBalance, 0);
   }, [accounts]);
 
@@ -28,6 +34,9 @@ export function useAccountsController() {
     isLoading: isFetching,
     accounts,
     openNewAccountModal,
-    currentyBalance,
+    currentBalance,
+    monthSummary,
+    allTransactions,
+    filters,
   };
 }

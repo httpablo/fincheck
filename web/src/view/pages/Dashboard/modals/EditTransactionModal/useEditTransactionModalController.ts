@@ -8,13 +8,18 @@ import { useBankAccounts } from "../../../../../app/hooks/useBankAccounts";
 import { currencyStringToNumber } from "../../../../../app/utils/currencyStringToNumber";
 import type { Transaction } from "../../../../../app/entities/Transaction";
 import { useCategories } from "../../../../../app/hooks/useCategories";
-import { transactionService } from "../../../../../app/services/transactionsService";
+import { transactionsService } from "../../../../../app/services/transactionsService";
 
 const schema = z.object({
-  value: z.union([z.string().nonempty("Informe o valor"), z.number()]),
-  name: z.string().nonempty("Informe o nome"),
-  categoryId: z.string().nonempty("Informe a categoria"),
-  bankAccountId: z.string().nonempty("Informe a conta bancária"),
+  value: z
+    .union([z.string().min(1, "Informe o valor"), z.number()])
+    .refine(
+      (val) => currencyStringToNumber(val) > 0,
+      "O valor deve ser maior que zero",
+    ),
+  name: z.string().min(1, "Informe o nome"),
+  categoryId: z.string().min(1, "Informe a categoria"),
+  bankAccountId: z.string().min(1, "Informe a conta bancária"),
   date: z.date(),
 });
 
@@ -59,11 +64,11 @@ export function useEditTransactionModalController(
   const { categories: categoriesList } = useCategories();
 
   const { status, mutateAsync: updateTransaction } = useMutation({
-    mutationFn: transactionService.update,
+    mutationFn: transactionsService.update,
   });
 
   const { status: statusDelete, mutateAsync: removeTransaction } = useMutation({
-    mutationFn: transactionService.remove,
+    mutationFn: transactionsService.remove,
   });
 
   const isLoading = status === "pending";
@@ -78,11 +83,20 @@ export function useEditTransactionModalController(
         id: transaction!.id,
         value: currencyStringToNumber(data.value),
         type: transaction!.type,
-        date: data.date.toISOString(),
+        date: new Date(
+          Date.UTC(
+            data.date.getFullYear(),
+            data.date.getMonth(),
+            data.date.getDate(),
+            12,
+            0,
+            0,
+          ),
+        ).toISOString(),
       });
 
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
       onClose();
       toast.success(
         transaction?.type === "EXPENSE"
@@ -108,13 +122,13 @@ export function useEditTransactionModalController(
     try {
       await removeTransaction(transaction!.id);
 
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
       onClose();
       toast.success(
         transaction?.type === "EXPENSE"
-          ? "Despesa deletada com sucesso!"
-          : "Receita deletada com sucesso!",
+          ? "Despesa excluída com sucesso!"
+          : "Receita excluída com sucesso!",
       );
     } catch {
       toast.error(

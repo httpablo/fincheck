@@ -10,7 +10,9 @@ export class UserRepository {
     return this.prismaService.user.create(createDto);
   }
 
-  findUnique(findUniqueDto: Prisma.UserFindUniqueArgs) {
+  findUnique<T extends Prisma.UserFindUniqueArgs>(
+    findUniqueDto: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>,
+  ) {
     return this.prismaService.user.findUnique(findUniqueDto);
   }
 }

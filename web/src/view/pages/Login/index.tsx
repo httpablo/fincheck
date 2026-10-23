@@ -9,7 +9,7 @@ export function Login() {
 
   return (
     <>
-      <header className="bg-red flex flex-col items-center gap-4 text-center">
+      <header className="flex flex-col items-center gap-4 text-center">
         <h1 className="text-2xl font-bold text-gray-900 tracking-[-1px]">
           Entre em sua conta
         </h1>
@@ -20,7 +20,7 @@ export function Login() {
           </span>
           <Link
             to="/register"
-            className="tracking-[-0.5px] font-medium text-teal-700"
+            className="tracking-[-0.5px] font-medium text-teal-900"
           >
             Crie uma conta
           </Link>

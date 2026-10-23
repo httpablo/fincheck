@@ -45,16 +45,19 @@ interface DropDownMenuItemProps {
   children: React.ReactNode;
   className?: string;
   onSelect?(): void;
+  "aria-label"?: string;
 }
 
 export function DropdownMenuItem({
   children,
   className,
   onSelect,
+  "aria-label": ariaLabel,
 }: DropDownMenuItemProps) {
   return (
     <RdxDropdownMenu.Item
       onSelect={onSelect}
+      aria-label={ariaLabel}
       className={cn(
         "min-h-10 outline-none flex items-center py-2 px-4 text-sm text-gray-800 data-highlighted:bg-gray-50 rounded-2xl transition-colors cursor-pointer",
         className

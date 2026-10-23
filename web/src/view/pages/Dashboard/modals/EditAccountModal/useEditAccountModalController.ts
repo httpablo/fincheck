@@ -1,7 +1,7 @@
-import { bankAccountsService } from "../../../../../app/services/bankAccountsService/index";
+import { bankAccountsService } from "../../../../../app/services/bankAccountsService";
 import z from "zod";
 import { useDashboard } from "../../components/DashboardContext/useDashboard";
-import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { currencyStringToNumber } from "../../../../../app/utils/currencyStringToNumber";
@@ -85,7 +85,8 @@ export function useEditAccountModalController() {
       await removeAccount(accountToEdit!.id);
 
       await queryClient.invalidateQueries({ queryKey: ["bankAccounts"] });
-      toast.success("Conta deletada com sucesso!");
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      toast.success("Conta excluída com sucesso!");
       closeEditAccountModal();
     } catch {
       toast.error("Erro ao deletar conta!");
